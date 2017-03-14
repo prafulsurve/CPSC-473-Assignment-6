@@ -38,7 +38,14 @@
             if (powers.achievement === 'Almond Milk') {
                 value = 'almond-milk';
             }
-            $('#flavorShot').append('<option value=' + value + '>' + powers.achievement + '</option>');
+            $('.power-group').append('&nbsp;&nbsp;&nbsp;<input type="checkbox" value=' + value + '>' + powers.achievement + '<br>');
+            $('.power-group').css({
+                'display': 'block',
+            });
+        } else {
+            $('.power-group').css({
+                'display': 'none',
+            });
         }
     });
 
@@ -60,25 +67,28 @@
                         achievement = 'Caramel Cream';
                         $('#myModal .modal-title').text('Caramel Cream Unlocked');
                         $('#myModal .modal-body').text('Do you want some Caramel Cream on your coffee?');
-                        $('#myModal').modal();
+                        if (powers['achievement'] != 'Caramel Cream')
+                            $('#myModal').modal();
                     }
                     if (data['flavor'] === 'almond') {
                         achievement = 'Almond Milk';
                         $('#myModal .modal-title').text('Almond Milk Unlocked');
                         $('#myModal .modal-body').text('Do you want to add Almond Milk to your coffee?');
-                        $('#myModal').modal();
+                        if (powers['achievement'] != 'Almond Milk')
+                            $('#myModal').modal();
                     }
                     if (data['flavor'] === 'mocha') {
                         achievement = 'Chocolate Cream';
                         $('#myModal .modal-title').text('Chocolate Cream Unlocked');
                         $('#myModal .modal-body').text('Do you want some Chocolate Cream on your coffee?');
-                        $('#myModal').modal();
+                        if (powers['achievement'] != 'Chocolate Cream')
+                            $('#myModal').modal();
                     }
                 }
             }
 
             $('.btn-yes').click(function() {
-                data['flavor'] = achievement;
+                data['power'] = achievement;
                 powerUnlocked(data['emailAddress'], achievement);
                 //achievement = '';
             });
@@ -86,6 +96,11 @@
             console.log(data);
             fn(data);
             this.reset();
+            if ($('#emailInput').val() === '') {
+                $('.power-group').css({
+                    'display': 'none',
+                });
+            }
             this.elements[0].focus();
         });
     };
