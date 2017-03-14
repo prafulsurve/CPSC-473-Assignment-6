@@ -2,6 +2,8 @@
     'use strict';
     var App = window.App || {};
     var $ = window.jQuery;
+    window.powers = {};
+    powers = window.powers;
 
     function FormHandler(selector) {
         if (!selector) {
@@ -13,16 +15,74 @@
         }
     }
 
+    function powerUnlocked(email, ach) {
+        if (powers['email'] === email) {
+            powers['achievement'] = ach;
+        } else {
+            powers['email'] = email;
+            powers['achievement'] = ach;
+        }
+    }
+
+    $('#emailInput').change(function() {
+        if ($('#emailInput').val() === powers['email']) {
+            var value = '';
+            if (powers.achievement === 'Chocolate Cream') {
+                value = 'chocolate-cream';
+            }
+
+            if (powers.achievement === 'Caramel Cream') {
+                value = 'caramel-cream';
+            }
+
+            if (powers.achievement === 'Almond Milk') {
+                value = 'almond-milk';
+            }
+            $('#flavorShot').append('<option value=' + value + '>' + powers.achievement + '</option>');
+        }
+    });
+
     FormHandler.prototype.addSubmitHandler = function(fn) {
         console.log('Setting submit handler for form');
         this.$formElement.on('submit', function(event) {
             event.preventDefault();
 
             var data = {};
+            var achievement;
             $(this).serializeArray().forEach(function(item) {
                 data[item.name] = item.value;
                 console.log(item.name + ' is ' + item.value);
             });
+
+            if (data['size'] === 'coffeezilla') {
+                if (data['strength'] === '100') {
+                    if (data['flavor'] === 'caramel') {
+                        achievement = 'Caramel Cream';
+                        $('#myModal .modal-title').text('Caramel Cream Unlocked');
+                        $('#myModal .modal-body').text('Do you want some Caramel Cream on your coffee?');
+                        $('#myModal').modal();
+                    }
+                    if (data['flavor'] === 'almond') {
+                        achievement = 'Almond Milk';
+                        $('#myModal .modal-title').text('Almond Milk Unlocked');
+                        $('#myModal .modal-body').text('Do you want to add Almond Milk to your coffee?');
+                        $('#myModal').modal();
+                    }
+                    if (data['flavor'] === 'mocha') {
+                        achievement = 'Chocolate Cream';
+                        $('#myModal .modal-title').text('Chocolate Cream Unlocked');
+                        $('#myModal .modal-body').text('Do you want some Chocolate Cream on your coffee?');
+                        $('#myModal').modal();
+                    }
+                }
+            }
+
+            $('.btn-yes').click(function() {
+                data['flavor'] = achievement;
+                powerUnlocked(data['emailAddress'], achievement);
+                //achievement = '';
+            });
+
             console.log(data);
             fn(data);
             this.reset();
@@ -31,4 +91,31 @@
     };
     App.FormHandler = FormHandler;
     window.App = App;
+
+
+    $(document).on({
+        change: function() {
+            var r, g, b;
+            var self = this,
+                output = $(self).next(),
+                val = parseInt(self.value);
+            if (val <= 35) {
+                r = Math.floor((255 * (val / 50))),
+                    g = 255,
+                    b = Math.floor((255 * (val / 50)));
+            } else if (val > 35 && val <= 65) {
+                r = Math.floor((255 * (val / 50))),
+                    g = 255,
+                    b = Math.floor(255 - (255 * (val / 50)));
+            } else {
+                r = 255,
+                    g = Math.floor((100 - val) / 50 * 255),
+                    b = Math.floor((100 - val) / 50 * 255);
+            }
+            output.css({
+                color: 'rgb(' + r + ',' + g + ',' + b + ')',
+            });
+        }
+    }, 'input[type="range"]');
+
 })(window);
